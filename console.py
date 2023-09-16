@@ -10,6 +10,9 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+import re
+from datetime import datetime
+import uuid
 
 
 class HBNBCommand(cmd.Cmd):
@@ -73,7 +76,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] is '{' and pline[-1] is'}'\
+                    if pline[0] == '{' and pline[-1] == '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -115,16 +118,47 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        if not args:
-            print("** class name missing **")
+        generated_args = ('id', 'created_at', 'updated_at', '__class__')
+        args = args.split(" ")
+        if len(args) == 0:
             return
-        elif args not in HBNBCommand.classes:
-            print("** class doesn't exist **")
+        if args[0] not in HBNBCommand.classes.keys():
             return
-        new_instance = HBNBCommand.classes[args]()
+        if len(args) == 1:
+            new_instance = HBNBCommand.classes[args[0]]()
+            storage.save()
+            print(new_instance.id)
+            storage.save()
+            return
+        params = args[1:]
+        keyword_args = {}
+        for param in params:
+            param_split = param.split("=")
+            key = param_split[0]
+            value = param_split[1]
+            if key in HBNBCommand.types.keys():
+                if HBNBCommand.types[key](value) == float:
+                    pattern = r'^[0-9]+\.[0-9]+$'
+                    if re.match(pattern, value) is None:
+                        return
+                try:
+                    new_value = HBNBCommand.types[key](value)
+                except (ValueError, Exception):
+                    return
+                else:
+                    keyword_args[key] = new_value
+            else:
+                pattern = r'^\"([^\\\"]|\\")*\"$'
+                if re.match(pattern, value) is None:
+                    return
+                else:
+                    keyword_args[key] = str(value.strip('"').replace("_", " "))
+        new_instance = HBNBCommand.classes[args[0]]()
+        for key in keyword_args.keys():
+            if key not in generated_args:
+                setattr(new_instance, key, keyword_args[key])
         storage.save()
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -272,7 +306,7 @@ class HBNBCommand(cmd.Cmd):
                 args.append(v)
         else:  # isolate args
             args = args[2]
-            if args and args[0] is '\"':  # check for quoted arg
+            if args and args[0] == '\"':  # check for quoted arg
                 second_quote = args.find('\"', 1)
                 att_name = args[1:second_quote]
                 args = args[second_quote + 1:]
@@ -280,10 +314,10 @@ class HBNBCommand(cmd.Cmd):
             args = args.partition(' ')
 
             # if att_name was not quoted arg
-            if not att_name and args[0] is not ' ':
+            if not att_name and args[0] != ' ':
                 att_name = args[0]
             # check for quoted val arg
-            if args[2] and args[2][0] is '\"':
+            if args[2] and args[2][0] == '\"':
                 att_val = args[2][1:args[2].find('\"', 1)]
 
             # if att_val was not quoted arg
