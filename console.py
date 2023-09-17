@@ -128,9 +128,8 @@ class HBNBCommand(cmd.Cmd):
             return
         if len(args) == 1:
             new_instance = HBNBCommand.classes[args[0]]()
-            storage.save()
+            new_instance.save()
             print(new_instance.id)
-            storage.save()
             return
         params = args[1:]
         keyword_args = {}
@@ -159,7 +158,7 @@ class HBNBCommand(cmd.Cmd):
         for key in keyword_args.keys():
             if key not in generated_args:
                 setattr(new_instance, key, keyword_args[key])
-        storage.save()
+        new_instance.save()
         print(new_instance.id)
 
     def help_create(self):
@@ -191,7 +190,7 @@ class HBNBCommand(cmd.Cmd):
 
         key = c_name + "." + c_id
         try:
-            print(storage._FileStorage__objects[key])
+            print(storage.all()[key])
         except KeyError:
             print("** no instance found **")
 
@@ -360,4 +359,3 @@ class HBNBCommand(cmd.Cmd):
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
-    # HBNBCommand().onecmd("create State name=\"California\"")

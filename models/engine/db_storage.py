@@ -34,10 +34,10 @@ class DBStorage:
         from models.review import Review
         obj = []
         if cls:
-            obj.append(self.__session.query(cls).all())
+            obj.extend(self.__session.query(cls).all())
         else:
-            obj.append(self.__session.query(User).all() + self.__session.query(City).all() +
-                       self.__session.query(State).all() + self.__session.query(Review).all() +
+            obj.extend(self.__session.query(State).all() + self.__session.query(City).all() +
+                       self.__session.query(User).all() + self.__session.query(Review).all() +
                        self.__session.query(Amenity).all() + self.__session.query(Place).all())
         return {f"{type(row).__name__}.{row.id}": row for row in obj}
 
@@ -55,6 +55,12 @@ class DBStorage:
 
     def reload(self):
         """connects the engine to the database"""
+        from models.state import State
+        from models.user import User
+        from models.amenity import Amenity
+        from models.city import City
+        from models.place import Place
+        from models.review import Review
+        Base.metadata.create_all(self.__engine)
         Session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))
         self.__session = Session()
-        Base.metadata.create_all(self.__engine)
