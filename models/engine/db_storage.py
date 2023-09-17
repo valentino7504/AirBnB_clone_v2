@@ -42,7 +42,7 @@ class DBStorage:
                        self.__session.query(Review).all() +
                        self.__session.query(Amenity).all() +
                        self.__session.query(Place).all())
-        return {f"{type(row).__name__}.{row.id}": row for row in obj}
+        return {f"{row.__class__.__name__}.{row.id}": row for row in obj}
 
     def new(self, obj):
         """Adds a new obj to the current Session object"""
