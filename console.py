@@ -1,3 +1,4 @@
+#!.venv/bin/python
 #!/usr/bin/python3
 """ Console Module """
 import cmd
@@ -10,6 +11,7 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
+from os import getenv
 import re
 from datetime import datetime
 import uuid
@@ -240,11 +242,13 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage._FileStorage__objects.items():
+            storage_objects = storage.all(HBNBCommand.classes[args])
+            for k, v in storage_objects.items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage._FileStorage__objects.items():
+            storage_objects = storage.all()
+            for k, v in storage_objects.items():
                 print_list.append(str(v))
 
         print(print_list)
@@ -356,3 +360,4 @@ class HBNBCommand(cmd.Cmd):
 
 if __name__ == "__main__":
     HBNBCommand().cmdloop()
+    # HBNBCommand().onecmd("create State name=\"California\"")
