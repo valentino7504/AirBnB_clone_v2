@@ -2,3 +2,4 @@
 .venv
 file.json
 .vscode
+test_script.sh
