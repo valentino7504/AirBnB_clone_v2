@@ -54,7 +54,8 @@ class DBStorage:
 
     def delete(self, obj=None):
         """deletes an object from the session"""
-        self.__session.delete(obj)
+        if obj:
+            self.__session.delete(obj)
 
     def reload(self):
         """connects the engine to the database"""
