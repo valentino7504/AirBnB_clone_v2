@@ -18,8 +18,8 @@ class DBStorage:
         _database = getenv("HBNB_MYSQL_DB")
         _host = getenv("HBNB_MYSQL_HOST")
         _mode = getenv("HBNB_ENV")
-        _connection_string = f"mysql+mysqldb://{_username}:{_password}@"
-        _connection_string += f"{_host}:3306/{_database}"
+        _connection_string = f"mysql+mysqldb://{_username}:{_password}@{_host}"
+        _connection_string += f":3306/{_database}"
         self.__engine = create_engine(_connection_string, pool_pre_ping=True)
         if _mode == "test":
             Base.metadata.drop_all(self.__engine)
@@ -59,12 +59,12 @@ class DBStorage:
 
     def reload(self):
         """connects the engine to the database"""
-        from models.state import State
-        from models.user import User
-        from models.amenity import Amenity
         from models.city import City
-        from models.place import Place
+        from models.state import State
         from models.review import Review
+        from models.user import User
+        from models.place import Place
+        from models.amenity import Amenity
         Base.metadata.create_all(self.__engine)
         Session = scoped_session(sessionmaker(
             bind=self.__engine, expire_on_commit=False))
