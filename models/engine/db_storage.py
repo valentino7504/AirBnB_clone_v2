@@ -1,4 +1,3 @@
-#!.venv/bin/python
 #!/usr/bin/python3
 """This module defines the DBStorage class to manage database storage"""
 from sqlalchemy import create_engine
@@ -19,7 +18,8 @@ class DBStorage:
         _database = getenv("HBNB_MYSQL_DB")
         _host = getenv("HBNB_MYSQL_HOST")
         _mode = getenv("HBNB_ENV")
-        _connection_string = f"mysql+mysqldb://{_username}:{_password}@{_host}:3306/{_database}"
+        _connection_string = f"mysql+mysqldb://{_username}:{_password}@{_host}"
+        _connection_string += f":3306/{_database}"
         self.__engine = create_engine(_connection_string, pool_pre_ping=True)
         if _mode == "test":
             Base.metadata.drop_all(self.__engine)
@@ -36,9 +36,12 @@ class DBStorage:
         if cls:
             obj.extend(self.__session.query(cls).all())
         else:
-            obj.extend(self.__session.query(State).all() + self.__session.query(City).all() +
-                       self.__session.query(User).all() + self.__session.query(Review).all() +
-                       self.__session.query(Amenity).all() + self.__session.query(Place).all())
+            obj.extend(self.__session.query(State).all() +
+                       self.__session.query(City).all() +
+                       self.__session.query(User).all() +
+                       self.__session.query(Review).all() +
+                       self.__session.query(Amenity).all() +
+                       self.__session.query(Place).all())
         return {f"{type(row).__name__}.{row.id}": row for row in obj}
 
     def new(self, obj):
@@ -51,16 +54,18 @@ class DBStorage:
 
     def delete(self, obj=None):
         """deletes an object from the session"""
-        self.__session.delete(obj)
+        if obj:
+            self.__session.delete(obj)
 
     def reload(self):
         """connects the engine to the database"""
-        from models.state import State
-        from models.user import User
-        from models.amenity import Amenity
         from models.city import City
-        from models.place import Place
+        from models.state import State
         from models.review import Review
+        from models.user import User
+        from models.place import Place
+        from models.amenity import Amenity
         Base.metadata.create_all(self.__engine)
-        Session = scoped_session(sessionmaker(bind=self.__engine, expire_on_commit=False))
+        Session = scoped_session(sessionmaker(
+            bind=self.__engine, expire_on_commit=False))
         self.__session = Session()

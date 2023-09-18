@@ -1,4 +1,3 @@
-#!.venv/bin/python
 #!/usr/bin/python3
 """This module defines a base class for all models in our hbnb clone"""
 import uuid
@@ -34,7 +33,8 @@ class BaseModel:
     def __str__(self):
         """Returns a string representation of the instance"""
         cls = (str(type(self)).split('.')[-1]).split('\'')[0]
-        print_dict = {k: v for k, v in self.__dict__.items() if k != "_sa_instance_state"}
+        print_dict = {k: v for k, v in self.__dict__.items() if k !=
+                      "_sa_instance_state"}
         return '[{}] ({}) {}'.format(cls, self.id, print_dict)
 
     def save(self):

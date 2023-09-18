@@ -12,7 +12,7 @@ class FileStorage:
         """Returns a dictionary of models currently in storage"""
         if cls is None:
             return self.__objects
-        elif type(cls) == str:
+        elif type(cls) is str:
             return {key: obj for key, obj in self.__objects.items()
                     if obj.__class__.__name__ == cls}
         else:
