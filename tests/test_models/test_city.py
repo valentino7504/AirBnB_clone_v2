@@ -2,6 +2,7 @@
 """ """
 from tests.test_models.test_base_model import test_basemodel
 from models.city import City
+from models.state import State
 from unittest import skipIf
 from os import getenv
 import MySQLdb
@@ -25,14 +26,19 @@ class test_City(test_basemodel):
 
     def __init__(self, *args, **kwargs):
         """ """
+        self.maxDiff = None
         super().__init__(*args, **kwargs)
         self.name = "City"
         self.value = City
 
     def test_new_city(self):
-        rows = self.cursor.execute("SELECT name FROM cities")
-        new = self.value()
+        rows = self.cursor.execute("SELECT * FROM cities")
+        state = State(name="Texas")
+        state.save()
+        new = self.value(name="San Francisco", state_id=state.id)
         new.save()
+        new_rows = self.cursor.execute("SELECT * FROM cities")
+        self.assertEqual(new_rows - rows, 1)
 
     @skipIf(getenv("HBNB_TYPE_STORAGE") == "db", "Storage is filestorage")
     def test_state_id(self):

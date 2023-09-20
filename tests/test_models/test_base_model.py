@@ -61,7 +61,7 @@ class test_basemodel(unittest.TestCase):
         """ """
         i = self.value()
         self.assertEqual(str(i), '[{}] ({}) {}'.format(self.name, i.id,
-                         i.__dict__))
+                         {x:v for x, v in i.__dict__.items() if x != '_sa_instance_state'}))
 
     def test_todict(self):
         """ """
