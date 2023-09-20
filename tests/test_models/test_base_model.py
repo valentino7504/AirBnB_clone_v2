@@ -2,6 +2,7 @@
 """ """
 from models.base_model import BaseModel
 import unittest
+from os import getenv
 import datetime
 from uuid import UUID
 import json
@@ -46,7 +47,7 @@ class test_basemodel(unittest.TestCase):
         copy.update({1: 2})
         with self.assertRaises(TypeError):
             new = BaseModel(**copy)
-
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db", "Storage is file storage")
     def test_save(self):
         """ Testing save """
         i = self.value()
@@ -74,6 +75,7 @@ class test_basemodel(unittest.TestCase):
         with self.assertRaises(TypeError):
             new = self.value(**n)
 
+    @unittest.skipIf(getenv("HBNB_TYPE_STORAGE") == "db", "Storage is file storage")
     def test_kwargs_one(self):
         """ """
         n = {'Name': 'test'}
