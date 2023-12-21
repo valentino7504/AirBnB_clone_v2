@@ -20,8 +20,14 @@ def do_pack():
     for i in range(3):
         time_list.append(full_time.split(":")[i])
     hour, minute, second = time_list[0], time_list[1], time_list[2]
-    file_name = f"versions/web_static_{year}{month}{day}"
-    f"{hour}{minute}{second}.tgz"
-    local("mkdir -p versions")
+    hms = f"{hour}{minute}{second}.tgz"
+    file_name = f"versions/web_static_{year}{month}{day}" + hms
+    result = local("mkdir -p versions")
+    if result.return_code != 0:
+        return None
     print(f"Packing web_static to {file_name}")
     local(f"tar -cvzf {file_name} web_static")
+    if result.return_code == 0:
+        return file_name
+    else:
+        return None
