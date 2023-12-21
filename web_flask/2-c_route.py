@@ -13,13 +13,15 @@ def hello():
     """returns the hello message"""
     return "Hello HBNB"
 
+
 @app.route("/hbnb", strict_slashes=False)
 def hbnb_msg():
     """returns the 'hbnb'"""
     return "HBNB"
 
+
 @app.route("/c/<text>", strict_slashes=False)
-def c_msg(text:str):
+def c_msg(text: str):
     """returns the c messages"""
     return f"C {text.replace('_', ' ')}"
 
