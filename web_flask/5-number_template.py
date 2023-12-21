@@ -48,7 +48,7 @@ def number_msg(n):
 def number_tem(n):
     """renders the number template page"""
     try:
-        value = int(n)
+        int(n)
     except ValueError:
         abort(404)
     else:
