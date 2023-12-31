@@ -5,7 +5,6 @@ this diplays a HTML page
 from flask import Flask, abort, render_template
 from models.state import State
 from models import storage
-from os import getenv
 
 app = Flask(__name__)
 
@@ -13,9 +12,9 @@ app = Flask(__name__)
 @app.route("/cities_by_states", strict_slashes=False)
 def list_cities():
     """list cities belonging to a state"""
-    states = storage.all(State)
-    return render_template("8-cities_by_states.html", states=states)
-
+    states = [state_obj for state_obj in storage.all(State).values()]
+    return render_template('8-cities_by_states.html',
+                           states=states)
 
 @app.teardown_appcontext
 def close_storage(var):
