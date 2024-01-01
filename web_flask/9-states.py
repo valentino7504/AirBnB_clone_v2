@@ -18,8 +18,10 @@ def list_states():
 
 
 @app.route("/states/<id>", strict_slashes=False)
-def states_by_id(id):
+def states_by_id(id=None):
     """list cities belonging to a state"""
+    if id is None:
+        return render_template("9-states.html", state=None)
     for state in storage.all(State).values():
         if state.id == id:
             return render_template("9-states.html", state=state)
