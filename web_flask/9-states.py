@@ -17,15 +17,17 @@ def list_states():
     return render_template("7-states_list.html", states=states)
 
 
-@app.route("/states/<id>", strict_slashes=False)
-def states_by_id(id=None):
-    """list cities belonging to a state"""
-    if id is None:
-        return render_template("9-states.html", state=None)
-    for state in storage.all(State).values():
-        if state.id == id:
-            return render_template("9-states.html", state=state)
-    return render_template("9-states.html", state=None)
+@app.route('/states/<id>')
+def state_by_id(id):
+    """
+    displays a html page with the state according to id
+    """
+    state = None
+    for state_obj in storage.all(State).values():
+        if state_obj.id == id:
+            state = state_obj
+    return render_template('9-states.html',
+                           state=state)
 
 
 @app.teardown_appcontext
